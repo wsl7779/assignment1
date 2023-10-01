@@ -25,8 +25,8 @@ glm::mat4 init_mat;
 bool look_right = true;
 bool has_fired = false;
 const float radius = 1.0f;
-const float firerate = 75.0f;
-const float speed = 0.01f;
+const float firerate = 1.0f;
+const float speed = 1.0f;
 float current_time = 0.0f;
 
 float x_pos_ball = 0.0f;
@@ -189,23 +189,22 @@ void update()
 {
     glClear;
 
-    /*
-    For some reason, whenever I use ticks, my update gets exponentially faster. Are my ticks increasing over each update?? 
+   
     
     float ticks = (float)SDL_GetTicks() / MILLISECONDS_IN_SECOND; // get the current number of ticks
     float delta_time = ticks - m_previous_ticks; // the delta time is the difference from the last frame
     m_previous_ticks = ticks;
-    */
+    
     
 
-    current_time++;
+    current_time += delta_time;
 
     if (current_time >= firerate) {
         has_fired = !has_fired;
         current_time = 0.0f;
     }
 
-    g_angle += speed;
+    g_angle += speed * delta_time;
 
     x_pos2 = radius * glm::cos(g_angle);
     y_pos2 = radius * glm::sin(g_angle);
@@ -218,15 +217,15 @@ void update()
     m_model_matrix = glm::rotate(m_model_matrix, glm::radians(-15.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
     if (has_fired) {
-        x_pos_ball = g_firetime * 10.0f;
-        y_pos_ball = (-40.0f * (g_firetime - 0.2f) * (g_firetime - 0.2f)) + 2.0f;
+        x_pos_ball = g_firetime * 10;
+        y_pos_ball = (-20.0f * (g_firetime - 0.3f) * (g_firetime - 0.3f)) + 1.8f;
         m_model_matrix = glm::translate(m_model_matrix, glm::vec3(x_pos_ball, y_pos_ball, 0.0f));
         m_model_matrix = glm::scale(m_model_matrix, glm::vec3(g_bombsize, g_bombsize, 1.0f));
         m_model_matrix = glm::rotate(m_model_matrix, bomb_angle, glm::vec3(0.0f, 0.0f, 1.0f));
 
-        bomb_angle -= 0.2f;
-        g_bombsize += 0.05f;
-        g_firetime += 0.01f;
+        bomb_angle -= 10.0f * delta_time;
+        g_bombsize += 3.0f * delta_time;
+        g_firetime += delta_time;
     }
     else {
         x_pos_ball = 0.0f;
